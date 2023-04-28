@@ -252,3 +252,7 @@ emoticons_dict = {
     ":*": "KISS",
     "<3": "LOVE"
 }
+
+stop_words = {'AT_USER', 'URL', 'a', 'all', 'am', 'and', 'are', 'at', 'be', 'can', 'do',
+              'for', 'get', 'got', 'have', 'i', 'in', 'is', 'it', 'me', 'my', 'of', 'on',
+              'the', 'to', 'up', 'will'}

@@ -10,8 +10,7 @@ from textblob import TextBlob
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-
-from Production.python.constantes import sample_abbr, emoticons_dict
+from Production.python.constantes import sample_abbr, emoticons_dict, stop_words
 
 
 #######################
@@ -66,19 +65,20 @@ def lemmatize_text(text):
 
 def normalisation_texte(data):
     """
-    Cette fonction prend en entrée un DataFrame pandas contenant au moins les colonnes label et text et renvoie
+    Cette fonction prend en entrée un DataFrame pandas contenant au moins les colonnes target et text et renvoie
     Un DataFrame nettoyé et normalisé.
 
     :param data: DataFrame pandas contenant les commentaires et leur label
     :return: DataFrame pandas avec les commentaires nettoyés
     """
 
-    data.text = data.text.apply(clean_text)\
-        .apply(word_tokenize)\
-        .apply(lemmatize_text)
+    data = data.apply(clean_text) \
+        .apply(word_tokenize) \
+        .apply(lemmatize_text) \
+        .apply(lambda comm: [word for word in comm if word not in stop_words]) \
+        .apply(lambda x: ["COMMENTAIRE_INSIGNIFIANT"] if x == [] else x) \
+        .apply(lambda x: ' '.join(x))
+
     return data
-
-
-
 
 

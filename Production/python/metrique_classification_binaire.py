@@ -1,8 +1,5 @@
-from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, roc_curve, \
-    confusion_matrix, precision_recall_curve, auc
+from sklearn.metrics import roc_curve, confusion_matrix, auc
 import matplotlib.pyplot as plt
-
-
 
 
 def evaluate_model(model, X_test, y_test):
@@ -22,7 +19,6 @@ def evaluate_model(model, X_test, y_test):
     # Affichage de la matrice de confusion
     cm = confusion_matrix(y_test, y_pred)
     precision = cm / cm.sum(axis=0)
-    recall = cm / cm.sum(axis=1)
     fig, ax = plt.subplots(figsize=(8, 8))
     im = ax.imshow(precision, cmap='Blues')
     ax.set_xticks(range(len(precision)))
@@ -43,15 +39,11 @@ def evaluate_model(model, X_test, y_test):
     plt.colorbar(im)
     plt.show()
 
-
-    # Calcul de l'aire sous la courbe ROC pour chaque classe
-    roc_auc = roc_auc_score(y_test, y_proba[:,1], multi_class='ovr')
-
     # Affichage de la courbe ROC
     fpr, tpr, _ = roc_curve(y_test, y_proba[:, 1], pos_label=4)
     roc_auc = auc(fpr, tpr)
 
-    plt.figure(figsize=(8,5))
+    plt.figure(figsize=(8, 5))
     plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
     plt.xlim([0.0, 1.0])
@@ -61,5 +53,3 @@ def evaluate_model(model, X_test, y_test):
     plt.title('Courbe ROC (Receiver Operating Characteristic)', fontsize=22, color="#0d270f")
     plt.legend(loc="lower right", fontsize=12)
     plt.show()
-
-

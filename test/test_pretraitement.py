@@ -13,13 +13,20 @@ from Production.python.pretraitement import normalisation_texte
 
 source = os.getcwd()
 comm = "{}/Production/ressources/commentaire.csv".format(source)
+comm_label = "{}/Production/ressources/commentaire_labellise.csv".format(source)
 
-data_brut = pd.read_csv(comm, sep=",", header=None,
-                        names=["target", 'ids', 'date', 'flag', 'user', 'text'],
-                        on_bad_lines='skip', encoding_errors='ignore',
-                        encoding="ISO-8859-1")
+data_label_brut = pd.read_csv(comm_label, sep=",", header=None,
+                              names=["target", 'ids', 'date', 'flag', 'user', 'text'],
+                              on_bad_lines='skip', encoding_errors='ignore',
+                              encoding="ISO-8859-1")
 
-data = data_brut[["target", "text"]]
+data_label = data_label_brut[["target", "text"]]
+
+data = pd.read_csv(comm,
+                   squeeze=True,
+                   names=["text"],
+                   on_bad_lines='skip', encoding_errors='ignore',
+                   encoding="ISO-8859-1")
 
 
 #######################
@@ -30,4 +37,7 @@ def test_normalisation_texte():
     data_clean = normalisation_texte(data)
 
     print(data_clean.sample(5))
-    print(data_clean.columns)
+
+
+def test_dev():
+    print(data)

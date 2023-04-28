@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from Production.python.pretraitement import normalisation_texte
+from python.pretraitement import normalisation_texte
 
 st.title('Classification de commentaires')
 st.write("Hello Word")

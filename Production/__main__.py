@@ -1,4 +1,15 @@
 import streamlit as st
+
+import pkg_resources
+
+installed_packages = [pkg.key for pkg in pkg_resources.working_set]
+st.text(installed_packages)
+
+import sys
+
+st.text(sys.prefix)
+
+
 import pandas as pd
 from python.pretraitement import normalisation_texte
 

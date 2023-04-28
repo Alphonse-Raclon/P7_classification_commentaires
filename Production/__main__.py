@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+!pip install contractions
 from python.pretraitement import normalisation_texte
 
 st.title('Classification de commentaires')

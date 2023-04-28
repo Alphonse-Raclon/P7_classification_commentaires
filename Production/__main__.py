@@ -1,8 +1,4 @@
 import streamlit as st
-
-!pip install contractions
-
-
 import pandas as pd
 from python.pretraitement import normalisation_texte
 

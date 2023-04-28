@@ -1,13 +1,6 @@
 import streamlit as st
 
-import pkg_resources
-
-installed_packages = [pkg.key for pkg in pkg_resources.working_set]
-st.text(installed_packages)
-
-import sys
-
-st.text(sys.prefix)
+!pip install contractions
 
 
 import pandas as pd

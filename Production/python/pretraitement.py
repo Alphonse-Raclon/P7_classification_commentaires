@@ -10,7 +10,7 @@ from textblob import TextBlob
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-from Production.python.constantes import sample_abbr, emoticons_dict, stop_words
+from python.constantes import sample_abbr, emoticons_dict, stop_words
 
 
 #######################

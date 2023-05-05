@@ -4,8 +4,12 @@
 #       Imports       #
 #######################
 
+import os
 import re
 import contractions
+import tensorflow as tf
+import tensorflow_hub as hub
+import tensorflow_text as text
 from textblob import TextBlob
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
@@ -80,5 +84,29 @@ def normalisation_texte(data):
         .apply(lambda x: ' '.join(x))
 
     return data
+
+
+def model_bert():
+    """
+    Cette fonction charge le modèle de classication bert préalablement entraîné
+
+    :return: modèle bert
+    """
+    source = os.getcwd()
+    model_path = "{}/Production/model_bert/poids_bert_class.h5".format(source)
+    # Créer le modèle BERT
+    bert_preprocess = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3", name="bert_preprocess")
+    bert_encoder = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/4", name="bert_encoder")
+    text_input = tf.keras.layers.Input(batch_size=32, shape=(), dtype=tf.string, name='text')
+    preprocessed_text = bert_preprocess(text_input)
+    outputs = bert_encoder(preprocessed_text)
+    l = tf.keras.layers.Dropout(0.1, name="dropout")(outputs['pooled_output'])
+    l = tf.keras.layers.Dense(1, activation='sigmoid', name="output")(l)
+    model = tf.keras.Model(inputs=[text_input], outputs=[l])
+
+    new_model = tf.keras.Model(inputs=model.inputs, outputs=model.outputs)
+    new_model.load_weights(model_path)
+    return new_model
+
 
 

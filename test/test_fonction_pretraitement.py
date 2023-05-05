@@ -5,7 +5,8 @@
 #######################
 import os
 import pandas as pd
-from Production.python.pretraitement import normalisation_texte
+import numpy as np
+from Production.python.fonction_traitement import normalisation_texte, model_bert
 
 #######################
 #      Variables      #
@@ -39,5 +40,15 @@ def test_normalisation_texte():
     print(data_clean.sample(5))
 
 
+def test_model_bert():
+    print(model_bert())
+
+
 def test_dev():
-    print(data)
+    df = data[0:5]
+    prediction = pd.DataFrame(df)
+    print(prediction)
+    res = np.array([0.2, 0.34, 0.45, 0.51, 0.71])
+    prediction["Seuil_positif=0.4"] = pd.Series(res).apply(lambda x: "positif" if x >= 0.4 else "negatif")
+    print(prediction)
+

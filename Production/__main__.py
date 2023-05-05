@@ -1,30 +1,51 @@
 import streamlit as st
 import pandas as pd
-from python.pretraitement import normalisation_texte
+import numpy as np
+import os
+from python.fonction_traitement import normalisation_texte, model_bert
 
 st.title('Classification de commentaires')
-st.write("Hello Word")
 
-URL_CSV = "https://github.com/Alphonse-Raclon/P7_classification_commentaires/blob/develop/Production/ressources/commentaire.csv"
+#######################
+#      Variables      #
+#######################
 
+source = os.getcwd()
+MODEL = "{}/Production/bert_class".format(source)
+model_prod = model_bert()
 
-st.text("On va maintenant charger un dataframe composé de commentaires à propos de restaurants")
+uploaded_file = st.file_uploader("Déposez un fichier csv avec des avis en anglais pour des restaurants \n"
+                                 "(sur une colonne)")
 
-data = pd.read_csv(URL_CSV,
-                   squeeze=True,
-                   names=["text"],
-                   on_bad_lines='skip', encoding_errors='ignore',
-                   encoding="ISO-8859-1")
+if uploaded_file:
+    df = pd.read_csv(uploaded_file,
+                     squeeze=True,
+                     names=["text"],
+                     on_bad_lines='skip', encoding_errors='ignore',
+                     encoding="ISO-8859-1")
 
-choice = st.slider("Choise un nombre de commentaires que tu veux afficher", 1, 20)
-data_select = data.sample(choice)
-st.dataframe(data_select)
+    data_clean = normalisation_texte(df)
+    res = model_prod.predict(data_clean)
 
-st.text("On va maintenant prétraiter ces commentaires pour pouvoir les rentrer dans le modèle prédictif")
-st.text("Traitement en cours ....")
-data_clean = normalisation_texte(data_select)
+    prediction = pd.DataFrame(df)
+    prediction["Seuil_positif=0.4"] = np.vectorize(lambda x: "positif" if x >= 0.4 else "negatif")(res)
+    prediction["Seuil_positif=0.5"] = np.vectorize(lambda x: "positif" if x >= 0.5 else "negatif")(res)
+    prediction["Seuil_positif=0.6"] = np.vectorize(lambda x: "positif" if x >= 0.6 else "negatif")(res)
 
-st.text("Commentaires normalisés : ")
-st.dataframe(data_clean)
+    col1, col2, col3 = st.columns(3)
 
+    with col1:
+        st.write("Commentaires innitiaux :")
+        st.write(df)
+
+    with col2:
+        st.write("Commentaires normalisés :")
+        st.write(data_clean)
+
+    with col3:
+        st.write("Probabilité de classification :")
+        st.write(res)
+
+    st.write('prédiction en fonction du "seuil de coupure"')
+    st.write(prediction)
 

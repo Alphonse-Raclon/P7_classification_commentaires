@@ -11,6 +11,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 import tensorflow_text as text
 import streamlit as st
 from textblob import TextBlob
@@ -111,7 +112,7 @@ def model_bert():
     :return: modèle bert
     """
     source = os.getcwd()
-    model_path = "{}/Production/model_bert/poids_bert_class.h5".format(source)
+    weights_path = "{}/Production/model_bert/poids_bert_class_output.npy".format(source)
     # Créer le modèle BERT
     bert_preprocess = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3",
                                      name="bert_preprocess")
@@ -120,12 +121,18 @@ def model_bert():
     preprocessed_text = bert_preprocess(text_input)
     outputs = bert_encoder(preprocessed_text)
     l = tf.keras.layers.Dropout(0.1, name="dropout")(outputs['pooled_output'])
-    l = tf.keras.layers.Dense(1, activation='sigmoid', name="output")(l)
+
+    # Ajouter la dernière couche au modèle
+    output_layer = tf.keras.layers.Dense(1, activation='sigmoid', name="output")
+    l = output_layer(l)
+
+    # Charger les poids de la dernière couche depuis le fichier
+    output_weights = np.load(weights_path, allow_pickle=True)
+    output_layer.set_weights(output_weights)
+
     model = tf.keras.Model(inputs=[text_input], outputs=[l])
 
-    new_model = tf.keras.Model(inputs=model.inputs, outputs=model.outputs)
-    new_model.load_weights(model_path)
-    return new_model
+    return model
 
 
 @st.cache_resource

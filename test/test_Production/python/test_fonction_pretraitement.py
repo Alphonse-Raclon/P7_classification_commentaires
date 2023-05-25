@@ -12,8 +12,8 @@ from Production.python.fonction_traitement import normalisation_texte, model_ber
 #######################
 
 source = os.getcwd()
-comm = "{}/Production/ressources/commentaire.csv".format(source)
-comm_label = "{}/Production/ressources/commentaire_labellise.csv".format(source)
+comm = "{}/test/ressources/commentaire.csv".format(source)
+comm_label = "{}/test/ressources/commentaire_labellise.csv".format(source)
 
 data_label_brut = pd.read_csv(comm_label, sep=",", header=None,
                               names=["target", 'ids', 'date', 'flag', 'user', 'text'],

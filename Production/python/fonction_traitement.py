@@ -14,12 +14,17 @@ import pandas as pd
 import numpy as np
 import tensorflow_text as text
 import streamlit as st
+import nltk
+nltk.download('punkt')
+nltk.download("wordnet")
+nltk.download('omw-1.4')
 from textblob import TextBlob
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
 from python.constantes import sample_abbr, emoticons_dict, stop_words
 
+print(nltk.data.path)
 
 #######################
 #      Fonctions      #

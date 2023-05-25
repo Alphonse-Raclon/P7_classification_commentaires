@@ -17,6 +17,7 @@ import streamlit as st
 import nltk
 nltk.download('punkt')
 nltk.download("wordnet")
+nltk.download('omw-1.4')
 from textblob import TextBlob
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer

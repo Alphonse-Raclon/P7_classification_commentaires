@@ -16,12 +16,14 @@ import tensorflow_text as text
 import streamlit as st
 import nltk
 nltk.download('punkt')
+nltk.download("wordnet")
 from textblob import TextBlob
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
 from python.constantes import sample_abbr, emoticons_dict, stop_words
 
+print(nltk.data.path)
 
 #######################
 #      Fonctions      #

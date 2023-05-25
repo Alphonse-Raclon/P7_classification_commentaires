@@ -15,13 +15,13 @@ import numpy as np
 import tensorflow_text as text
 import streamlit as st
 import nltk
+nltk.download('punkt')
 from textblob import TextBlob
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
 from python.constantes import sample_abbr, emoticons_dict, stop_words
 
-nltk.download('punkt')
 
 #######################
 #      Fonctions      #

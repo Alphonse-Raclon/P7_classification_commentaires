@@ -24,8 +24,6 @@ from nltk.stem import WordNetLemmatizer
 
 from python.constantes import sample_abbr, emoticons_dict, stop_words
 
-print(nltk.data.path)
-
 #######################
 #      Fonctions      #
 #######################

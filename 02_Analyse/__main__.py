@@ -1,11 +1,9 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 
 import mlflow
 
 from gensim.models import Word2Vec
-
 
 
 def main(bad_buzz):
@@ -15,7 +13,7 @@ def main(bad_buzz):
     sentences = bad_buzz.text_clean.tolist()
 
     # Entraîner le modèle Word2Vec avec la méthode CBOW
-    model = Word2Vec(sentences, sg=0, vector_size=100, min_count=1, workers=8)
+    model = Word2Vec(sentences, sg=1, vector_size=150, min_count=1, workers=8)
     # Combinaison des listes de mots en une seule liste
     all_words = [word for comment in bad_buzz['text_clean'] for word in comment]
 
@@ -45,7 +43,6 @@ def main(bad_buzz):
     pca = PCA(n_components=n_comp)
     res_vect_comm = pca.fit_transform(vect_comm_std)
 
-
     X = res_vect_comm
     y = bad_buzz.target
 
@@ -65,6 +62,20 @@ def main(bad_buzz):
     # Évaluer les performances du modèle
     from sklearn.metrics import accuracy_score
     print("Accuracy:", accuracy_score(y_test, y_pred))
+
+    # partie MLOps
+    mlflow.start_run()
+
+    mlflow.log_param("vector_size", 150)
+    mlflow.log_param("min_count", 1)
+    mlflow.log_param("n_components", n_comp)
+    mlflow.log_param("sg", 1)
+
+    mlflow.log_metric("accuracy", accuracy_score(y_test, y_pred))
+
+    mlflow.sklearn.log_model(clf, "model")
+
+    mlflow.end_run()
 
     return bad_buzz.text_clean
 

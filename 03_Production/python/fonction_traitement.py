@@ -112,7 +112,7 @@ def model_bert():
     :return: modèle bert
     """
     source = os.getcwd()
-    weights_path = "{}/Production/model_bert/poids_bert_class_output.npy".format(source)
+    weights_path = "{}/03_Production/model_bert/poids_bert_class_output.npy".format(source)
     # Créer le modèle BERT
     bert_preprocess = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3",
                                      name="bert_preprocess")

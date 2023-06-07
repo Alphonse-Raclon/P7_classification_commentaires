@@ -13,7 +13,7 @@ st.header("Détectez les Bad Buzz grâce au Deep Learning")
 #######################
 
 source = os.getcwd()
-MODEL = "{}/03_Production/bert_class".format(source)
+MODEL = "{}/c_Production/bert_class".format(source)
 model_prod = model_bert()
 
 # Définir les options pour la sélection

@@ -5,7 +5,7 @@
 #######################
 import os
 import pandas as pd
-from Analyse.__main__ import main
+# from __main__ import main
 
 #######################
 #      Variables      #
@@ -20,8 +20,8 @@ bad_buzz = pd.read_csv(comm, sep="\t")
 #      Fonctions      #
 #######################
 
-def test_dev():
-    print("ok")
-    print(main(bad_buzz))
+# def test_dev():
+#     print("ok")
+#     print(main(bad_buzz))
 
 

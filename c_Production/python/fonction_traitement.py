@@ -18,7 +18,7 @@ from textblob import TextBlob
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-from python.constantes import sample_abbr, emoticons_dict, stop_words
+from c_Production.python.constantes import sample_abbr, emoticons_dict, stop_words
 
 
 #######################
@@ -112,7 +112,7 @@ def model_bert():
     :return: modèle bert
     """
     source = os.getcwd()
-    weights_path = "{}/03_Production/model_bert/poids_bert_class_output.npy".format(source)
+    weights_path = "{}/c_Production/model_bert/poids_bert_class_output.npy".format(source)
     # Créer le modèle BERT
     bert_preprocess = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3",
                                      name="bert_preprocess")

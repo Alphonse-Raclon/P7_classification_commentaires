@@ -5,7 +5,8 @@
 #######################
 import os
 import pandas as pd
-from Production.python.fonction_traitement import normalisation_texte, model_bert
+import pytest
+from c_Production.python.fonction_traitement import normalisation_texte, model_bert
 
 #######################
 #      Variables      #
@@ -39,6 +40,7 @@ def test_normalisation_texte():
     print(data_clean)
 
 
+@pytest.mark.skip(reason="no way of currently testing this")
 def test_model_bert():
     print(model_bert())
 

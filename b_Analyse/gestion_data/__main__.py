@@ -18,7 +18,7 @@ while not os.path.basename(repertoire_courant) == 'P7_classification_commentaire
     if repertoire_parent == repertoire_courant:
         raise FileNotFoundError("Répertoire racine du projet introuvable.")
     repertoire_courant = repertoire_parent
-chemin_config = os.path.join(repertoire_courant, '02_Analyse/Configuration/config.ini')
+chemin_config = os.path.join(repertoire_courant, 'b_Analyse/Configuration/config.ini')
 config = configparser.ConfigParser()
 config.read(chemin_config)
 

@@ -5,7 +5,12 @@
 ##########################
 import pandas as pd
 import os
-import glob
+import re
+import contractions
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+
+from c_Production.python.constantes import sample_abbr, emoticons_dict, stop_words
 
 
 ##########################
@@ -47,7 +52,71 @@ def step_0_lecture_data_brut(path_data, chunksize=100000):
     return df_label_0.sample(frac=1).reset_index(drop=True), df_label_4.sample(frac=1).reset_index(drop=True)
 
 
-def step_1_ecriture_lots(df_label_0, df_label_4, output_dir, lot_size=40000):
+def step_1_1_clean_text(comment):
+    """
+    Cette fonction prend un commentaire en paramètre et le renvoie normalisé
+    :param comment: commentaire sous forme de chaîne de caractères
+    :return: commentaire normalisé
+    """
+    # On met tout en minuscules
+    comment = comment.lower()
+
+    # On supprime les formes contractés du texte pour uniformiser le format du texte avec la forme décontractée
+    comment = contractions.fix(comment)
+
+    # Remplacement des smiley par du texte
+    comment = " ".join([emoticons_dict.get(word, word) for word in comment.split()])
+
+    # Remplacement des abbréviations du texte
+    comment = " ".join([sample_abbr.get(word, word) for word in comment.split()])
+
+    # Remplacement de certaines parties du texte tels que les utilisateurs, les liens, les mentions
+    comment = re.sub(r'@\w+', 'AT_USER', comment)
+    comment = re.sub(r'https?://\S+', 'URL', comment)
+    comment = re.sub(r'#([^\s]+)', r'\1', comment)
+    comment = re.sub(r'[\s]+', ' ', comment)
+    comment = re.sub(r'[^a-zA-Z_]', ' ', comment)
+
+    # Remplacement des suites de caractères répétées
+    comment = re.compile(r"(.)\1{2,}").sub(r"\1\1", comment)
+
+    # Correction des fautes d'orthographes
+    comment = ''.join(comment)
+
+    return comment
+
+
+def step_1_2_lemmatize_text(comment):
+    """
+    Cette fonction lemmatise le commente
+    :param comment: commentaire
+    :return: commentaire lemmatisé
+    """
+    # Lemmatise
+    lemmatizer = WordNetLemmatizer()
+    return [lemmatizer.lemmatize(word) for word in comment]
+
+
+def step_1_3_main_normalisation_texte(data):
+    """
+    Cette fonction prend en entrée un DataFrame pandas contenant au moins les colonnes target et text et renvoie
+    Un DataFrame nettoyé et normalisé.
+
+    :param data: DataFrame pandas contenant les commentaires et leur label
+    :return: DataFrame pandas avec les commentaires nettoyés
+    """
+
+    data = data.apply(step_1_1_clean_text) \
+        .apply(word_tokenize) \
+        .apply(step_1_2_lemmatize_text) \
+        .apply(lambda comm: [word for word in comm if word not in stop_words]) \
+        .apply(lambda x: ["COMMENTAIRE_INSIGNIFIANT"] if x == [] else x) \
+        .apply(lambda x: ' '.join(x))
+
+    return data
+
+
+def step_2_ecriture_lots(df_label_0, df_label_4, output_dir, lot_size=40000):
     """
     Cette fonction répartit les données des DataFrames pour les labels 0 et 4 en lots équilibrés de taille spécifiée
     et les enregistre au format CSV dans un répertoire donné. Le répertoire de sortie est vidé entièrement avant

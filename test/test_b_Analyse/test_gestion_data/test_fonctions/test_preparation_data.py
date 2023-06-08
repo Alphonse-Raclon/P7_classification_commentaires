@@ -7,7 +7,8 @@ import pandas as pd
 import pytest
 import configparser
 import shutil
-from b_Analyse.gestion_data.fonctions.preparation_data import step_0_lecture_data_brut, step_1_ecriture_lots
+from b_Analyse.gestion_data.fonctions.preparation_data import step_0_lecture_data_brut, step_2_ecriture_lots, \
+    step_1_1_clean_text
 
 ##########################
 #     CONFIGURATION      #
@@ -84,7 +85,7 @@ def test_step_1_ecriture_lots():
     Cette fonction test le bon fonctionnement de la fonction eponyme
     """
     df_label_0, df_label_4 = step_0_lecture_data_brut(path_data_brut)
-    step_1_ecriture_lots(df_label_0, df_label_4, path_data_transforme_init, lot_size=3)
+    step_2_ecriture_lots(df_label_0, df_label_4, path_data_transforme_init, lot_size=3)
 
     file_list = os.listdir(path_data_transforme_init)
     file_0 = file_list[0]
@@ -92,9 +93,22 @@ def test_step_1_ecriture_lots():
     creation_time_1 = os.path.getmtime(os.path.join(path_data_transforme_init, file_0))
     time.sleep(1)
 
-    step_1_ecriture_lots(df_label_0, df_label_4, path_data_transforme_init, lot_size=4)
+    step_2_ecriture_lots(df_label_0, df_label_4, path_data_transforme_init, lot_size=4)
 
     creation_time_2 = os.path.getmtime(os.path.join(path_data_transforme_init, file_0))
 
     assert len(file_list) == 4
     assert creation_time_2 > creation_time_1
+
+
+def test_step_2_1_clean_text():
+    """
+    Cette fonction test le bon fonctionnement de la fonction eponyme
+    """
+
+    comment = "@johnnybeane hey! You just changed your default. "
+    comment_clean = step_1_1_clean_text(comment)
+
+    comment_expected = "AT_USER hey  you just changed your default "
+
+    assert comment_clean == comment_expected

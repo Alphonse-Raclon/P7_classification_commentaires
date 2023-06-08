@@ -4,9 +4,10 @@
 ##########################
 #        IMPORTS         #
 ##########################
-import pandas as pd
-import os
 import configparser
+
+from b_Analyse.gestion_data.fonctions.preparation_data import *
+
 
 ##########################
 #     CONFIGURATION      #
@@ -25,10 +26,35 @@ config.read(chemin_config)
 ##########################
 #       VARIABLES        #
 ##########################
-
-download_url = config.get('MEGA', 'mega_link')
+path_data_brut = os.path.join(repertoire_courant, config.get('PATH_GESTION_DATA', 'path_data_brut'))
+path_data_transformee = os.path.join(repertoire_courant, config.get('PATH_GESTION_DATA', 'path_data_transformee'))
 
 ##########################
 #       Fonctions        #
 ##########################
 
+
+def main(path_data_input, path_data_output):
+    """
+    Cette fonction main récupère les données brut et les prépare pour
+    être prête à être utilisée pour les modèles de machine learning
+
+    :param path_data_input: path menant aux données brutes
+    :param path_data_output: path où les données normalisées seront enregistrées
+
+    La fonction enregistre les données prêtes à l'emploi par paquets
+    """
+
+    # Recuperation des données d'intérêt uniquement
+    df_0, df_4 = step_0_lecture_data_brut(path_data_input)
+
+    # Normalisation des données
+    df_0["text"], df_4["text"] = step_1_3_main_normalisation_texte(df_0["text"]), \
+        step_1_3_main_normalisation_texte(df_4["text"])
+
+    # Enregistrement par lots des données
+    step_2_ecriture_lots(df_0, df_4, path_data_output)
+
+
+if __name__ == '__main__':
+    main(path_data_brut, path_data_transformee)

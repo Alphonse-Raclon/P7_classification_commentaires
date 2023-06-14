@@ -34,13 +34,14 @@ path_data_transformee = os.path.join(repertoire_courant, config.get('PATH_GESTIO
 ##########################
 
 
-def main(path_data_input, path_data_output):
+def main(path_data_input, path_data_output, lot_size=40000):
     """
     Cette fonction main récupère les données brut et les prépare pour
     être prête à être utilisée pour les modèles de machine learning
 
     :param path_data_input: path menant aux données brutes
     :param path_data_output: path où les données normalisées seront enregistrées
+    :param lot_size : taille des lots équilibrés
 
     La fonction enregistre les données prêtes à l'emploi par paquets
     """
@@ -53,7 +54,7 @@ def main(path_data_input, path_data_output):
         step_1_3_main_normalisation_texte(df_4["text"])
 
     # Enregistrement par lots des données
-    step_2_ecriture_lots(df_0, df_4, path_data_output)
+    step_2_ecriture_lots(df_0, df_4, path_data_output, lot_size)
 
 
 if __name__ == '__main__':

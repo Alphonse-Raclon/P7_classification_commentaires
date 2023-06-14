@@ -116,7 +116,7 @@ def step_1_3_main_normalisation_texte(data):
     return data
 
 
-def step_2_ecriture_lots(df_label_0, df_label_4, output_dir, lot_size=40000):
+def step_2_ecriture_lots(df_label_0, df_label_4, output_dir, lot_size):
     """
     Cette fonction répartit les données des DataFrames pour les labels 0 et 4 en lots équilibrés de taille spécifiée
     et les enregistre au format CSV dans un répertoire donné. Le répertoire de sortie est vidé entièrement avant

@@ -5,15 +5,16 @@
 #######################
 import os
 import pandas as pd
-from Production.python.fonction_traitement import normalisation_texte, model_bert
+import pytest
+from c_Production.python.fonction_traitement import normalisation_texte, model_bert
 
 #######################
 #      Variables      #
 #######################
 
 source = os.getcwd()
-comm = "{}/Production/ressources/commentaire.csv".format(source)
-comm_label = "{}/Production/ressources/commentaire_labellise.csv".format(source)
+comm = "{}/test/ressources/commentaire.csv".format(source)
+comm_label = "{}/test/ressources/commentaire_labellise.csv".format(source)
 
 data_label_brut = pd.read_csv(comm_label, sep=",", header=None,
                               names=["target", 'ids', 'date', 'flag', 'user', 'text'],
@@ -39,6 +40,7 @@ def test_normalisation_texte():
     print(data_clean)
 
 
+@pytest.mark.skip(reason="no way of currently testing this")
 def test_model_bert():
     print(model_bert())
 

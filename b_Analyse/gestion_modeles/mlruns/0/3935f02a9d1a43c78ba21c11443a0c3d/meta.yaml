@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/lnkhe/PycharmProjects/P7_classification_commentaires/b_Analyse/gestion_modeles/mlruns/0/3935f02a9d1a43c78ba21c11443a0c3d/artifacts
+end_time: 1686844038328
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 3935f02a9d1a43c78ba21c11443a0c3d
+run_name: Foret Aleatoire - 0_1_150_5_200_18_0.8
+run_uuid: 3935f02a9d1a43c78ba21c11443a0c3d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1686843957491
+status: 3
+tags: []
+user_id: lnkhe

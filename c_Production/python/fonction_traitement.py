@@ -15,10 +15,11 @@ import numpy as np
 import tensorflow_text as text
 import streamlit as st
 import nltk
+from gensim.models import KeyedVectors
+
 nltk.download('punkt')
 nltk.download("wordnet")
 nltk.download('omw-1.4')
-from textblob import TextBlob
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
@@ -51,7 +52,7 @@ def clean_text(comment):
     # On met tout en minuscules
     comment = comment.lower()
 
-    # On supprime les formes contractés du texte pour uniformiser le format du texte avec la forme décontractée
+    # On supprime les formes contractées du texte pour uniformiser le format du texte avec la forme décontractée
     comment = contractions.fix(comment)
 
     # Remplacement des smiley par du texte
@@ -71,7 +72,7 @@ def clean_text(comment):
     comment = re.compile(r"(.)\1{2,}").sub(r"\1\1", comment)
 
     # Correction des fautes d'orthographes
-    comment = ''.join(TextBlob(comment).correct())
+    comment = ''.join(comment)
 
     return comment
 
@@ -115,7 +116,7 @@ def model_bert():
     :return: modèle bert
     """
     source = os.getcwd()
-    weights_path = "{}/c_Production/model_bert/poids_bert_class_output.npy".format(source)
+    weights_path = "{}/c_Production/model_bert/poids_bert_class_output_v2.npy".format(source)
     # Créer le modèle BERT
     bert_preprocess = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3",
                                      name="bert_preprocess")
@@ -176,3 +177,65 @@ def pie_chart(res, seuil):
     st.pyplot(fig1)
 
 
+def transform_comments_to_vectors(bad_buzz, vectors_path):
+    """
+    Transforme les commentaires en vecteurs à l'aide de vecteurs Word2Vec pré-enregistrés.
+
+    :param bad_buzz: Serie pandas composé des colonnes
+    :param vectors_path: Chemin vers les vecteurs Word2Vec pré-enregistrés
+    :return: DataFrame correspondant à la matrice composée des vecteurs correspondant à chaque commentaire
+    """
+    bad_buzz = bad_buzz.apply(lambda x: x.split(" "))
+
+    # Charger les vecteurs Word2Vec pré-enregistrés
+    word_vectors = KeyedVectors.load(vectors_path, mmap='r')
+
+    # Filtrer les mots selon les vecteurs Word2Vec
+    bad_buzz = bad_buzz.apply(lambda words: [word for word in words if word in word_vectors])
+
+    # Remplacer les commentaires vides par un vecteur vide
+    bad_buzz = bad_buzz.apply(lambda words: words if len(words) > 0 else ['<empty_comment>'])
+
+    # Enregistrement des vecteurs de chaque commentaire
+    bad_buzz_word2vec = bad_buzz.apply(lambda words: np.mean([word_vectors[word] for word in words], axis=0))
+
+    bad_buzz_word2vec = bad_buzz_word2vec.apply(pd.Series)
+
+    return bad_buzz_word2vec
+
+
+
+#################################################################################
+#################################################################################
+#################################################################################
+#################################################################################
+#################################################################################
+
+
+if __name__ == "__main__":
+
+    vectors_path = r"C:\Users\lnkhe\PycharmProjects\P7_classification_commentaires\b_Analyse\gestion_modeles\mlruns\models\Word2Vec\word2vec.wordvectors"
+    word_vectors = KeyedVectors.load(vectors_path, mmap='r')
+
+
+    # print(word_vectors["other"])
+
+    comments = [
+        "this is a great product",
+        "I love the quality of this item",
+        "the customer service was excellent",
+        "I had a terrible experience with this company",
+        "the shipping was fast and efficient",
+        "the price is too high for what you get",
+        "the product arrived damaged",
+        "the packaging was well done",
+        "the website is user-friendly",
+        "the product doesn't work as expected",
+        "the",
+        ""
+    ]
+    df = pd.DataFrame({"text": comments})
+    print(df)
+
+    df_out = transform_comments_to_vectors(df, vectors_path)
+    print(df_out)

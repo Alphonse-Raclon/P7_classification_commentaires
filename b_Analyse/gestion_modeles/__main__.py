@@ -25,7 +25,8 @@ config.read(chemin_config)
 #      Variables         #
 ##########################
 
-file_entrainement = os.path.join(repertoire_courant, config.get('PATH_MODELS', 'file_entrainement'))
+file_entrainement = os.path.join(repertoire_projet, config.get('PATH_MODELS', 'file_entrainement'))
+file_evaluation = os.path.join(repertoire_projet, config.get('PATH_MODELS', 'file_evaluation'))
 
 
 ##########################
@@ -89,5 +90,11 @@ def main(file):
         model_gradient_boosting_tree(file, **dict(zip(param_gradient_boosting.keys(), params)))
 
 
+def main_bert(file):
+    """ Cette fonction juste pour avoir les performances d'un modèle Bert déjà entraîné"""
+    model_bert(file)
+
+
 if __name__ == '__main__':
     main(file_entrainement)
+    # main_bert(file_evaluation)

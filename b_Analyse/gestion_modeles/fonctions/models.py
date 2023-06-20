@@ -11,6 +11,10 @@ from datetime import datetime
 import configparser
 import os
 
+import tensorflow as tf
+import tensorflow_hub as hub
+import tensorflow_text as text
+
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
@@ -28,14 +32,14 @@ from gensim.models.fasttext import FastText
 ##########################
 #     CONFIGURATION      #
 ##########################
-repertoire_courant = os.path.dirname(os.path.abspath(__file__))
+repertoire_projet = os.path.dirname(os.path.abspath(__file__))
 # Remonter les répertoires parents jusqu'à atteindre le répertoire racine du projet
-while not os.path.basename(repertoire_courant) == 'P7_classification_commentaires':
-    repertoire_parent = os.path.dirname(repertoire_courant)
-    if repertoire_parent == repertoire_courant:
+while not os.path.basename(repertoire_projet) == 'P7_classification_commentaires':
+    repertoire_parent = os.path.dirname(repertoire_projet)
+    if repertoire_parent == repertoire_projet:
         raise FileNotFoundError("Répertoire racine du projet introuvable.")
-    repertoire_courant = repertoire_parent
-chemin_config = os.path.join(repertoire_courant, 'b_Analyse/Configuration/config.ini')
+    repertoire_projet = repertoire_parent
+chemin_config = os.path.join(repertoire_projet, 'b_Analyse/Configuration/config.ini')
 config = configparser.ConfigParser()
 config.read(chemin_config)
 
@@ -49,7 +53,7 @@ now = datetime.now()
 # Format the date and time as AAAAMMJJhhmmss
 formatted_date = now.strftime("%Y%m%d%H%M%S")
 
-path_image = os.path.join(repertoire_courant, config.get('PATH_MODELS', 'path_image'))
+path_image = os.path.join(repertoire_projet, config.get('PATH_MODELS', 'path_image'))
 
 
 ##########################
@@ -65,6 +69,7 @@ def step_util_load_data(file_path):
     :return: Série pandas
     """
     return pd.read_csv(file_path)
+
 
 # Méthodes d'embedding
 
@@ -225,6 +230,36 @@ def step_2_3_gradient_boosting_tree(X_train, X_test, y_train, n_estimators, max_
     return y_pred, y_proba
 
 
+def step_2_4_chargement_model_bert():
+    """
+    Cette fonction charge le modèle de classication bert préalablement entraîné
+
+    :return: modèle bert
+    """
+
+    weights_path = "{}/c_Production/model_bert/poids_bert_class_output_v2.npy".format(repertoire_projet)
+    # Créer le modèle BERT
+    bert_preprocess = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3",
+                                     name="bert_preprocess")
+    bert_encoder = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/4", name="bert_encoder")
+    text_input = tf.keras.layers.Input(batch_size=32, shape=(), dtype=tf.string, name='text')
+    preprocessed_text = bert_preprocess(text_input)
+    outputs = bert_encoder(preprocessed_text)
+    l = tf.keras.layers.Dropout(0.1, name="dropout")(outputs['pooled_output'])
+
+    # Ajouter la dernière couche au modèle
+    output_layer = tf.keras.layers.Dense(1, activation='sigmoid', name="output")
+    l = output_layer(l)
+
+    # Charger les poids de la dernière couche depuis le fichier
+    output_weights = np.load(weights_path, allow_pickle=True)
+    output_layer.set_weights(output_weights)
+
+    model = tf.keras.Model(inputs=[text_input], outputs=[l])
+
+    return model
+
+
 # Evaluation
 
 def step_3_0_visual_evaluation(y_test, y_proba, y_pred, name_modele):
@@ -270,7 +305,7 @@ def step_3_0_visual_evaluation(y_test, y_proba, y_pred, name_modele):
 
     # Affichage de la courbe ROC
     name_courbe_roc = "{}/Courbe_ROC_{}_{}.png".format(path_image, formatted_date, name_modele)
-    fpr, tpr, _ = roc_curve(y_test, y_proba[:, 1], pos_label=4)
+    fpr, tpr, _ = roc_curve(y_test, y_proba, pos_label=4)
     roc_auc = auc(fpr, tpr)
 
     plt.figure(figsize=(8, 5))
@@ -294,7 +329,7 @@ def step_3_1_evaluation(y_test, y_pred, y_proba):
     """
     accuracy = accuracy_score(y_test, y_pred)
 
-    fpr, tpr, _ = roc_curve(y_test, y_proba[:, 1], pos_label=4)
+    fpr, tpr, _ = roc_curve(y_test, y_proba, pos_label=4)
     roc_auc = auc(fpr, tpr)
 
     return accuracy, roc_auc
@@ -332,6 +367,7 @@ def model_regression_logistique(file_path, embedding=0, sg=1, vect_size=100, min
     X_train, X_test, y_train, y_test = step_1_pca_train_test_split(bad_buzz['target'], matrice_comm)
 
     y_pred, y_proba = step_2_1_regression_logistique(X_train, X_test, y_train)
+    y_proba = y_proba[:, 1]
 
     accuracy, roc_auc = step_3_1_evaluation(y_test, y_pred, y_proba)
 
@@ -382,6 +418,7 @@ def model_foret_aleatoire(file_path, embedding=0, sg=1, vect_size=100, min_count
     X_train, X_test, y_train, y_test = step_1_pca_train_test_split(bad_buzz['target'], matrice_comm)
 
     y_pred, y_proba = step_2_2_foret_aleatoire(X_train, X_test, y_train, n_estimators, max_depth, max_samples)
+    y_proba = y_proba[:, 1]
 
     accuracy, roc_auc = step_3_1_evaluation(y_test, y_pred, y_proba)
 
@@ -435,6 +472,7 @@ def model_gradient_boosting_tree(file_path, embedding=0, sg=1, vect_size=100, mi
     X_train, X_test, y_train, y_test = step_1_pca_train_test_split(bad_buzz['target'], matrice_comm)
 
     y_pred, y_proba = step_2_3_gradient_boosting_tree(X_train, X_test, y_train, n_estimators, max_depth, subsample)
+    y_proba = y_proba[:, 1]
 
     accuracy, roc_auc = step_3_1_evaluation(y_test, y_pred, y_proba)
 
@@ -448,7 +486,7 @@ def model_gradient_boosting_tree(file_path, embedding=0, sg=1, vect_size=100, mi
     mlflow.log_param("max_depth", max_depth)
     mlflow.log_param("subsample", subsample)
 
-    # Exemple de plusieurs métriques à enregistrer
+    # métriques à enregistrer
     metrics = {
         'accuracy': accuracy,
         'roc_auc': roc_auc
@@ -458,3 +496,38 @@ def model_gradient_boosting_tree(file_path, embedding=0, sg=1, vect_size=100, mi
     mlflow.end_run()
 
 
+def model_bert(file_path):
+    """
+    Cette fonction prend en entrée un jeu de donnée qui servira pour l'evaluation d'un modèle bert déjà entrainé.
+    Elle enregistre également les performances du modèle dans le mlflow.
+
+    :param file_path: fichier CSV
+    """
+
+    mlflow.start_run(run_name="Modele Bert v2")
+
+    # Chargment des données
+    bad_buzz = step_util_load_data(file_path)
+
+    # Chargement du modèle
+    model = step_2_4_chargement_model_bert()
+
+    y_proba = model.predict(bad_buzz.text)
+    y_pred = np.vectorize(lambda x: 4 if x >= 0.5 else 0)(y_proba)
+    y_test = bad_buzz.target
+
+    accuracy, roc_auc = step_3_1_evaluation(y_test, y_pred, y_proba)
+
+    fin_name = "modele_bert"
+    step_3_0_visual_evaluation(y_test, y_proba, y_pred, fin_name)
+    mlflow.tensorflow.log_model(model, 'model_bert')
+    mlflow.tensorflow.save_model(model, "mlruns/models/Bert_Model")
+
+    # métriques à enregistrer
+    metrics = {
+        'accuracy': accuracy,
+        'roc_auc': roc_auc
+    }
+
+    mlflow.log_metrics(metrics)
+    mlflow.end_run()

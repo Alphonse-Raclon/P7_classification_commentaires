@@ -23,7 +23,7 @@ nltk.download('omw-1.4')
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-from c_Production.python.constantes import sample_abbr, emoticons_dict, stop_words
+from python.constantes import sample_abbr, emoticons_dict, stop_words
 
 #######################
 #      Fonctions      #

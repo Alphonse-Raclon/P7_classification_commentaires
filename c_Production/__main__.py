@@ -18,7 +18,7 @@ source = os.getcwd()
 st.write(source)
 FORET_PATH = "{}/b_Analyse/gestion_modeles/mlruns/0/" \
              "3935f02a9d1a43c78ba21c11443a0c3d/artifacts/foret_aleatoire".format(source)
-WORD2VEC_PATH = "{}/b_Analyse/gestion_modeles/mlruns/models/Word2Vec/word2vec.wordvectors"
+WORD2VEC_PATH = "{}/b_Analyse/gestion_modeles/mlruns/models/Word2Vec/word2vec.wordvectors".format(source)
 
 model_prod = model_bert()
 

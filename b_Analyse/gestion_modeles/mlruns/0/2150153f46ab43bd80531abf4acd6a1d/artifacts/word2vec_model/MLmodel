@@ -1,0 +1,11 @@
+artifact_path: word2vec_model
+flavors:
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.0.2
+mlflow_version: 2.3.2
+model_uuid: 946356951766462ca19f8e4642dae182
+run_id: 2150153f46ab43bd80531abf4acd6a1d
+utc_time_created: '2023-06-17 09:15:38.972916'

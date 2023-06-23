@@ -138,7 +138,6 @@ def step_0_2_fasttext(bad_buzz, sg, vect_size, min_count):
 
 
 # Réduction de dimension et séparation des données pour entraînement et test
-
 def step_1_pca_train_test_split(label, matrice_embedding):
     """
     Cette fonction réduit la dimmension de nos vecteurs commentaires à l'aide du pca et
@@ -155,13 +154,13 @@ def step_1_pca_train_test_split(label, matrice_embedding):
     # Calcul des composantes principales
     n_comp = 0.99
 
-    pca = PCA(n_components=n_comp)
+    pca = PCA(n_components=n_comp, random_state=1)
     res_vect_comm = pca.fit_transform(vect_comm_std)
 
     X = res_vect_comm
     y = label
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.2, random_state=1)
 
     return X_train, X_test, y_train, y_test
 

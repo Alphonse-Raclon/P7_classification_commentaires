@@ -1,0 +1,19 @@
+artifact_path: model_bert
+flavors:
+  python_function:
+    data: data
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.tensorflow
+    python_version: 3.8.16
+  tensorflow:
+    code: null
+    data: data
+    keras_version: 2.10.0
+    model_type: keras
+    save_format: tf
+mlflow_version: 2.3.2
+model_uuid: ae791f871a3f4a19b5b98d2b1912b72f
+run_id: fae0e2f9a2184d7ca16d9d163392269b
+utc_time_created: '2023-06-16 17:21:08.206283'

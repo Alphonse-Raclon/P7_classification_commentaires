@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/lnkhe/PycharmProjects/P7_classification_commentaires/b_Analyse/gestion_modeles/mlruns/0/2150153f46ab43bd80531abf4acd6a1d/artifacts
+end_time: 1686993344776
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 2150153f46ab43bd80531abf4acd6a1d
+run_name: Word2Vec - 1_150_5
+run_uuid: 2150153f46ab43bd80531abf4acd6a1d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1686993309729
+status: 3
+tags: []
+user_id: lnkhe

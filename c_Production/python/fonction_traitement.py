@@ -16,6 +16,8 @@ import tensorflow_text as text
 import streamlit as st
 import nltk
 from gensim.models import KeyedVectors
+import joblib
+import mlflow
 
 nltk.download('punkt')
 nltk.download("wordnet")
@@ -24,6 +26,7 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
 from python.constantes import sample_abbr, emoticons_dict, stop_words
+
 
 #######################
 #      Fonctions      #
@@ -38,7 +41,7 @@ def load_data(file):
     """
     return pd.read_csv(file,
                        squeeze=True,
-                       names=["text"],
+                       names=["tweet"],
                        on_bad_lines='skip', encoding_errors='ignore',
                        encoding="ISO-8859-1")
 
@@ -177,6 +180,7 @@ def pie_chart(res, seuil):
     st.pyplot(fig1)
 
 
+@st.cache_resource
 def transform_comments_to_vectors(bad_buzz, vectors_path):
     """
     Transforme les commentaires en vecteurs à l'aide de vecteurs Word2Vec pré-enregistrés.
@@ -204,6 +208,27 @@ def transform_comments_to_vectors(bad_buzz, vectors_path):
     return bad_buzz_word2vec
 
 
+@st.cache_resource
+def chargement_modeles_foret_aleatoire(path_source):
+    """
+    Cette fonction charge et renvoie les différents modèles nécessaires au traitement des données par la foret aléatoire
+        - modèle de Standardistion
+        - modèle d'ACP
+        - modèle de forêt aléatoire
+
+    :param path_source: chemin vers le répertoire base
+    :return: les 3 modèles
+    """
+
+    scaler = joblib.load("{}/b_Analyse/gestion_modeles/mlruns/models/RF_dependency/scaler.joblib".format(path_source))
+    pca = joblib.load("{}/b_Analyse/gestion_modeles/mlruns/models/RF_dependency/pca.joblib".format(path_source))
+    random_forest = mlflow.sklearn.load_model(
+        "{}/b_Analyse/gestion_modeles/mlruns/0/1166531aed2d4a698a1edc9b673381dc"
+        "/artifacts/foret_aleatoire".format(path_source))
+
+    return scaler, pca, random_forest
+
+
 
 #################################################################################
 #################################################################################
@@ -213,10 +238,8 @@ def transform_comments_to_vectors(bad_buzz, vectors_path):
 
 
 if __name__ == "__main__":
-
     vectors_path = r"C:\Users\lnkhe\PycharmProjects\P7_classification_commentaires\b_Analyse\gestion_modeles\mlruns\models\Word2Vec\word2vec.wordvectors"
     word_vectors = KeyedVectors.load(vectors_path, mmap='r')
-
 
     # print(word_vectors["other"])
 

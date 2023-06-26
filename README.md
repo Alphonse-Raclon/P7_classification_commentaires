@@ -15,11 +15,27 @@ C'est à dire la partie traitement des données, développement et entraînement
 Enfin, le dossier `test` comporte quelques TU élémentaires qui ont
 servies au développement de fonctions adaptées.
 
-## Lancement (en local) de la partie c_Production correspondant au déploiement du modèle
+
+## Partie b_Analyse
+
+Cette partie regroupe 2 sous-parties :
+
+*   gestion_datas : qui se lance avec le `__main__.py` permet de lancer le prétraitement avec le renvoie en sortie 
+de données (modulable) prête à l'utilisation pour les modèles de prédiction
+*  gestion_modeles : qui se lance avec le `__main__.py` traite de la gestion entraînement et enregistrement des modèles 
+dans le mlflow
+## Lancement de la partie c_Production correspondant au déploiement du modèle
+
+Pour lancer en local :
 
 Ouvrez le terminal et lancer la commande suivante :
 
 *   `streamlit run .\c_Production\__main__.py`
+
+Ou déployez en accès libre aux adresses suivantes version 2 et 3 :
+
+* https://h-linke-p7-classification-commentair-production--main---11s0jq.streamlit.app/
+* https://h-linke-p7-classification-commenta-c-production--main---n8fgp1.streamlit.app/
 
 ## Lancement des tests unitaires (en local)
 
